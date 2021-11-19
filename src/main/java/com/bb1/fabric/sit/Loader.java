@@ -61,7 +61,7 @@ public class Loader implements ModInitializer {
             	}
             	BlockState blockState = player.getEntityWorld().getBlockState(new BlockPos(player.getX(), player.getY()-1, player.getZ()));
             	if (player.hasVehicle() || player.isFallFlying() || player.isSleeping() || player.isSwimming() || player.isSpectator() || blockState.isAir() || blockState.getMaterial().isLiquid()) return 0;
-            	Entity entity = createChair(player.getEntityWorld(), player.getBlockPos(), new Vec3d(0, -1.7, 0), player.getPos(), false);
+            	Entity entity = createChair(player.getEntityWorld(), player.getBlockPos(), new Vec3d(0, -1.7, 0), player.getPos());
             	player.startRiding(entity, true);
             	return 1;
             }));
@@ -83,7 +83,7 @@ public class Loader implements ModInitializer {
 		System.out.println("[FabricSit] Loaded! Thank you for using FabricSit");
 	}
 	
-	public static Entity createChair(World world, BlockPos blockPos, Vec3d blockPosOffset, @Nullable Vec3d target, boolean boundToBlock) {
+	public static Entity createChair(World world, BlockPos blockPos, Vec3d blockPosOffset, @Nullable Vec3d target) {
 		ArmorStandEntity entity = new ArmorStandEntity(world, 0.5d+blockPos.getX()+blockPosOffset.getX(), blockPos.getY()+ blockPosOffset.getY(), 0.5d+blockPos.getZ() + blockPosOffset.getZ());
 		if (target!=null) entity.lookAt(EntityAnchor.EYES, target.subtract(0, (target.getY()*2), 0));
 		entity.setInvisible(true);

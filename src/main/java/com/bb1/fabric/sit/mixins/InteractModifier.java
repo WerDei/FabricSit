@@ -80,7 +80,7 @@ public class InteractModifier {
 		}
 
 		blockPosOffset = blockPosOffset.add(0, -1.2, 0);
-		Entity chair = Loader.createChair(world, blockPos, blockPosOffset, lookTarget, true);
+		Entity chair = Loader.createChair(world, blockPos, blockPosOffset, lookTarget);
 
 		Entity v = player.getVehicle();
 		if (v!=null) {
