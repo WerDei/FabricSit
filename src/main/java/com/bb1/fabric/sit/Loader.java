@@ -67,18 +67,21 @@ public class Loader implements ModInitializer {
             }));
 		});
 
-		Events.GameEvents.TICK_EVENT.register(server -> {
-			CHAIRS.forEach(chair -> {
-				boolean remove = false;
-				if (chair.getPassengerList().size() < 1) remove = true;
-				if (chair.getEntityWorld().getBlockState(chair.getCameraBlockPos()).isAir()) remove = true;
+		Events.GameEvents.TICK_EVENT.register(server -> CHAIRS.forEach(chair -> {
+			boolean remove = false;
+			if (chair.getPassengerList().size() < 1) remove = true;
+			if (chair.getEntityWorld().getBlockState(chair.getCameraBlockPos()).isAir()) remove = true;
 
-				if (remove) {
-					chair.kill();
-					CHAIRS.remove(chair);
-				}
-			});
-		});
+			if (remove) {
+				chair.getPassengerList().forEach(passenger ->
+				{
+					Vec3d pos = passenger.getPos();
+					passenger.setPos(pos.x, Math.ceil(pos.y), pos.z);
+				});
+				chair.kill();
+				CHAIRS.remove(chair);
+			}
+		}));
 
 		System.out.println("[FabricSit] Loaded! Thank you for using FabricSit");
 	}
