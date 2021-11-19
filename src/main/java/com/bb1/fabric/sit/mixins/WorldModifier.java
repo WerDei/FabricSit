@@ -3,6 +3,7 @@ package com.bb1.fabric.sit.mixins;
 
 import com.bb1.fabric.sit.Loader;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.world.ModifiableWorld;
@@ -20,7 +21,12 @@ public class WorldModifier
     @Inject(method = "addEntity(Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"))
     public void inject(Entity entity, CallbackInfoReturnable<Boolean> cir)
     {
-        if (Objects.requireNonNull(entity.getCustomName()).asString().equals(Loader.chairName))
+        if (
+                entity.isInvisible() &&
+                entity.isInvulnerable() &&
+                entity.hasCustomName() &&
+                entity.getCustomName().asString().equals(Loader.chairName) &&
+                entity instanceof ArmorStandEntity)
             Loader.CHAIRS.add(entity);
     }
 }
