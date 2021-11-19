@@ -4,7 +4,8 @@
   "package": "com.bb1.fabric.sit.mixins",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-  	"InteractModifier",
+    "InteractModifier",
+    "WorldModifier"
   ],
   "client": [
   ],

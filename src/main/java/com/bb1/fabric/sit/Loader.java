@@ -37,11 +37,13 @@ import net.minecraft.world.World;
  */
 public class Loader implements ModInitializer {
 	
-	private static final Set<Entity> CHAIRS = new HashSet<Entity>();
+	public static final Set<Entity> CHAIRS = new HashSet<Entity>();
 	
 	private static final Config CONFIG = new Config();
 	
 	public static final @NotNull Config getConfig() { return CONFIG; }
+
+	public static String chairName = "FABRIC_SEAT";
 	
 	@Override
 	public void onInitialize() {
@@ -64,47 +66,29 @@ public class Loader implements ModInitializer {
             	return 1;
             }));
 		});
-		Events.GameEvents.STOP_EVENT.register((server)->{
-			for (Entity entity : CHAIRS) {
-				if (entity.isAlive()) { entity.kill(); }
-			}
+
+		Events.GameEvents.TICK_EVENT.register(server -> {
+			CHAIRS.forEach(chair -> {
+				boolean remove = false;
+				if (chair.getPassengerList().size() < 1) remove = true;
+				if (chair.getEntityWorld().getBlockState(chair.getCameraBlockPos()).isAir()) remove = true;
+
+				if (remove) {
+					chair.kill();
+					CHAIRS.remove(chair);
+				}
+			});
 		});
+
 		System.out.println("[FabricSit] Loaded! Thank you for using FabricSit");
 	}
 	
 	public static Entity createChair(World world, BlockPos blockPos, Vec3d blockPosOffset, @Nullable Vec3d target, boolean boundToBlock) {
-		ArmorStandEntity entity = new ArmorStandEntity(world, 0.5d+blockPos.getX()+blockPosOffset.getX(), blockPos.getY()+ blockPosOffset.getY(), 0.5d+blockPos.getZ() + blockPosOffset.getZ()) {
-			
-			private boolean v = false;
-			
-			@Override
-			protected void addPassenger(Entity passenger) {
-				super.addPassenger(passenger);
-				v = true;
-			}
-			
-			@Override
-			public boolean canMoveVoluntarily() {
-				return false;
-			}
-			
-			@Override
-			public boolean collides() {
-				return false;
-			}
-			
-			@Override
-			public void tick() {
-				if (v && getPassengerList().size()<1) { kill(); }
-				if (getEntityWorld().getBlockState(getCameraBlockPos()).isAir() && boundToBlock) { kill(); }
-				super.tick();
-			}
-			
-		};
+		ArmorStandEntity entity = new ArmorStandEntity(world, 0.5d+blockPos.getX()+blockPosOffset.getX(), blockPos.getY()+ blockPosOffset.getY(), 0.5d+blockPos.getZ() + blockPosOffset.getZ());
 		if (target!=null) entity.lookAt(EntityAnchor.EYES, target.subtract(0, (target.getY()*2), 0));
 		entity.setInvisible(true);
 		entity.setInvulnerable(true);
-		entity.setCustomName(new LiteralText("FABRIC_SEAT"));
+		entity.setCustomName(new LiteralText(chairName));
 		entity.setNoGravity(true);
 		world.spawnEntity(entity);
 		CHAIRS.add(entity);
